@@ -4,6 +4,7 @@ import {getToDos, postToDos, patchToDos, deleteToDos} from "../../api/toDosApi";
 import { FaBeer } from 'react-icons/fa';
 import {faTrash, faUpload} from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react';
+
 import '../../index.css'
 
 const ToDoList = () => {
@@ -15,7 +16,8 @@ const ToDoList = () => {
         isError,
         error,
         data: todos
-    } = useQuery("todos", getToDos)
+    } = useQuery(["todos"], getToDos);
+
     const postTodoMutation = useMutation(postToDos, {
         onSuccess: () => {
             //invalidates cache and refetch 
@@ -40,10 +42,11 @@ const ToDoList = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        postTodoMutation.mutate({userId: 8, title: newToDo, completed: true})
+        postTodoMutation.mutate({userId: 8, title: newToDo, completed: false})
         setNewToDo("")
         
         }
+
         const iconStyle = {
             height: "15px",
             width: "20px",
@@ -66,14 +69,21 @@ const ToDoList = () => {
                 </button>
             </form>
         )
-        let content ;
-        if (content) {
+        let content = "" ;
+        if (isLoading) {
             content =  <p>Loading... {isLoading}</p>
         }else if (isError) {
             content = <p>{error.message}</p>;
         }else {
             content = JSON.stringify(todos)
         }
+  
+        
+    const handleDelete = (e) => {
+            e.preventDefault();
+            deleteTodoMutation.mutate({id: e.id})
+        }
+       
   return (
     <main>
         <h1>TO DO LIST </h1>
